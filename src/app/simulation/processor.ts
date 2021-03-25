@@ -1,5 +1,4 @@
 // tslint:disable: no-conditional-assignment
-import { TmplAstElement } from '@angular/compiler';
 import { Rectangle } from '../geometry/rectangle';
 import { Task } from './task';
 import { TaskQueue } from './taskqueue';
@@ -17,10 +16,6 @@ export class Processor extends Rectangle {
     width: number,
     height: number,
     protected batchSize: number,
-    //protected queue: Queue,
-    //color?: undefined | null | string,
-    //lineWidth?: undefined | null | number,
-    //lineColor?: undefined | null | string,
   ) {
     super(ctx, x, y, width, height, 'grey', 1, 'black');
   }

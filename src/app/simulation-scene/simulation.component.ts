@@ -1,19 +1,18 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
-import { FormControl } from '@angular/forms';
-import { insertSorted } from '../common';
+import { insertSorted, saveCSV, toCSV } from '../common';
 import { Shape } from '../geometry';
 import { Processor, TaskFactory } from '../simulation';
 import { TaskGeneratorCancel, WeightListEntry } from '../simulation/taskfactory';
 import { TaskQueue } from '../simulation/taskqueue';
 
 class Results {
+  throughput = 0;
   mean = 0;
   median = 0;
   p90 = 0;
   p95 = 0;
   p99 = 0;
   p999 = 0;
-  throughput = 0;
 }
 
 const percIndex = (len: number, magnitude: number): number => Math.round((len / magnitude) * (magnitude - 1));
@@ -38,7 +37,6 @@ export class SimulationComponent implements OnInit {
   protected overallDuration = 0;
   protected simulationStart = 0;
 
-  public arrivalWeightList = new FormControl('');
   public model = {
     arrivalWeightList: '[0.4, 750], [0.2, 1000], [0.3, 500], [0.1, 2000]',
     taskWeightList: '[0.4, 3000], [0.2, 5000], [0.3, 4000], [0.05, 10000], [0.05, 20000]',
@@ -119,6 +117,15 @@ export class SimulationComponent implements OnInit {
     this.durations = new Array<number>();
     this.results = new Results();
     this.overallDuration = 0;
+  }
+
+  public saveCSV(): void {
+    const csvStr = toCSV(
+      Object.keys(this.results),
+      [Object.values(this.results)]
+    );
+    console.log(csvStr);
+    saveCSV('queueing_export_' + new Date().getTime().toString(), csvStr);
   }
 
   private parseWeightList(input: string): WeightListEntry[] {

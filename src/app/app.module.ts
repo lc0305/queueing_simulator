@@ -9,12 +9,14 @@ import { SimulationComponent } from './simulation-scene/simulation.component';
 import { LayoutComponent } from './layout/layout.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { FormsModule } from '@angular/forms';
+import { FooterComponent } from './footer/footer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     SimulationComponent,
-    LayoutComponent
+    LayoutComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,
