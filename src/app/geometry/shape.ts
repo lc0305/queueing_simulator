@@ -85,18 +85,18 @@ export class AbsoluteAnimationStep extends AbstractAnimationStep {
     if (!this.ctx) {
       throw new Error('Context is not set.');
     }
-    const diffX = this.x - this.ctx.getXPos();
-    if (diffX === 0) {
+    const deltaX = this.x - this.ctx.getXPos();
+    if (deltaX === 0) {
       return AnimationResult.COMPLETE;
-    } else if (0 < diffX) {
-      if (diffX < this.speed) {
-        this.ctx.moveX(diffX);
+    } else if (0 < deltaX) {
+      if (deltaX < this.speed) {
+        this.ctx.moveX(deltaX);
         return AnimationResult.COMPLETE;
       }
       this.ctx.moveX(this.speed);
     } else {
-      if (-(this.speed) < diffX) {
-        this.ctx.moveX(diffX);
+      if (-(this.speed) < deltaX) {
+        this.ctx.moveX(deltaX);
         return AnimationResult.COMPLETE;
       }
       this.ctx.moveLeft(this.speed);
@@ -111,18 +111,18 @@ export class AbsoluteAnimationStep extends AbstractAnimationStep {
     if (!this.ctx) {
       throw new Error('Context is not set.');
     }
-    const diffY = this.y - this.ctx.getYPos();
-    if (diffY === 0) {
+    const deltaY = this.y - this.ctx.getYPos();
+    if (deltaY === 0) {
       return AnimationResult.COMPLETE;
-    } else if (0 < diffY) {
-      if (diffY < this.speed) {
-        this.ctx.moveY(diffY);
+    } else if (0 < deltaY) {
+      if (deltaY < this.speed) {
+        this.ctx.moveY(deltaY);
         return AnimationResult.COMPLETE;
       }
       this.ctx.moveY(this.speed);
     } else {
-      if (-(this.speed) < diffY) {
-        this.ctx.moveY(diffY);
+      if (-(this.speed) < deltaY) {
+        this.ctx.moveY(deltaY);
         return AnimationResult.COMPLETE;
       }
       this.ctx.moveUp(this.speed);
@@ -227,7 +227,14 @@ export abstract class AbstractShape implements Shape {
     protected color?: undefined | null | string,
     protected lineWidth?: undefined | null | number,
     protected lineColor?: undefined | null | string,
-  ) { }
+  ) {
+    if (x < 0) {
+      throw new Error(`x is ${x}. Must be greater or equal than 0.`);
+    }
+    if (y < 0) {
+      throw new Error(`y is ${y}. Must be greater or equal than 0.`);
+    }
+  }
 
   abstract draw(): void;
   abstract collisionXRight(xRight: number): boolean;

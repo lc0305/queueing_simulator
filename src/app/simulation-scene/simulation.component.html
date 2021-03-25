@@ -1,0 +1,121 @@
+<main class="row">
+  <div class="col-9 text-center p-4">
+    <h1>Queueing Simulator</h1>
+    <canvas #simulation width="1000" height="450" style="border:1px solid #000000;">
+      Your browser does not support the HTML canvas tag.
+    </canvas>
+    <div class="row">
+      <div class="col-6">
+        <label>Animation-Speed</label>
+        <mat-slider min="60" max="480" step="20" value="240" (valueChange)="slider($event)"></mat-slider>
+      </div>
+      <div class="col-6 pt-3">
+        <span>
+          <strong>Throughput:</strong> {{results.throughput || '-'}} Tasks/s
+        </span>
+      </div>
+    </div>
+    <table class="table">
+      <thead>
+        <td style="width: 14.28%">
+          <strong>
+            Queueing Delay
+          </strong>
+        </td>
+        <td style="width: 14.28%">
+          Mean
+        </td>
+        <td style="width: 14.28%">
+          Median (P50)
+        </td>
+        <td style="width: 14.28%">
+          P90
+        </td>
+        <td style="width: 14.28%">
+          P95
+        </td>
+        <td style="width: 14.28%">
+          P99
+        </td>
+        <td style="width: 14.28%">
+          P99.9
+        </td>
+      </thead>
+      <tr>
+        <td>
+          <strong>
+            Milliseconds
+          </strong>
+        </td>
+        <td>
+          {{results.mean || "-"}}
+        </td>
+        <td>
+          {{results.median || "-"}}
+        </td>
+        <td>
+          {{results.p90 || "-"}}
+        </td>
+        <td>
+          {{results.p95 || "-"}}
+        </td>
+        <td>
+          {{results.p99 || "-"}}
+        </td>
+        <td>
+          {{results.p999 || "-"}}
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-3 text-center p-4">
+    <h1>
+      Settings
+    </h1>
+    <div class="row">
+      <div class="col-12 text-center">
+        <form #settingsForm="ngForm" (ngSubmit)="settingsChanged()">
+          <div class="form-group">
+            <label for="arrivalWeightList">Arrival Weight-List</label>
+            <input type="text" class="form-control" id="arrivalWeightList"
+                   required
+                   [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList">
+          </div>
+          <div class="form-group">
+            <label for="taskWeightList">Task-Duration (in ms) Weight-List</label>
+            <input type="text" class="form-control" id="taskWeightList"
+                   required
+                   [(ngModel)]="model.taskWeightList" name="taskWeightList">
+          </div>
+          <mat-form-field appearance="fill">
+            <mat-label>Choose a batch-size for the processors</mat-label>
+            <mat-select required [(ngModel)]="model.batchSize" id="batchSize" name="batchSize">
+              <mat-option value="1">1</mat-option>
+              <mat-option value="2">2</mat-option>
+              <mat-option value="4">4</mat-option>
+              <mat-option value="8">8</mat-option>
+              <mat-option value="-1">All</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <div class="form-group">
+            <label for="processorCount">Processor Count</label>
+            <mat-slider min="1" max="12" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.processorCount" id="processorCount" name="processorCount"></mat-slider>
+          </div>
+          <div class="form-group">
+            <label for="queueCount">Queue Count</label>
+            <mat-slider min="1" max="4" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueCount" id="queueCount" name="queueCount"></mat-slider>
+          </div>
+          <div class="form-group">
+            <label for="queueSize">Queue Size</label>
+            <mat-slider min="1" max="20" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueSize" id="queueSize" name="queueSize"></mat-slider>
+          </div>
+          <div class="form-group">
+            <button type="submit" color="primary" mat-raised-button>
+              Start Simulation
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</main>

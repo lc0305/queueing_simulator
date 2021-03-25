@@ -3,7 +3,7 @@ import { CustomShape } from './customshape';
 import { AnimateConfig, AnimationStep, AnimationSteps, Shape } from './shape';
 
 const RADIUS = 20;
-const MOVE_SPEED = 1;
+const MOVE_SPEED = 2;
 
 const DIAMETER = RADIUS * 2;
 const PADDING = RADIUS / 5;
@@ -12,11 +12,11 @@ const WIDTH = RADIUS * 3;
 const XPOSQ = (x: number, qLen: number, qSize: number): number => x + (DIAMETER + PADDING) * (qSize - 1 - qLen) - RADIUS;
 const YPOSQ = (y: number): number => y + (WIDTH / 2);
 
-export class Queue implements Shape {
+export class Queue<T extends Circle> implements Shape {
 
   protected readonly topBarrier: CustomShape;
   protected readonly bottomBarrier: CustomShape;
-  protected queue = new Array<Circle>();
+  protected queue = new Array<T>();
   protected readonly animationSteps = new AnimationSteps();
   protected color: string;
 
@@ -72,7 +72,7 @@ export class Queue implements Shape {
     this.animationSteps.push(animationStep);
   }
 
-  public push(circle: Circle): void {
+  public push(circle: T): void {
     if (this.size <= this.queue.length) {
       return;
     }
@@ -81,7 +81,7 @@ export class Queue implements Shape {
     this.queue.push(circle);
   }
 
-  public pop(): null | Circle {
+  public pop(): null | T {
     const retCircle = this.queue.shift();
     if (!retCircle) {
       return null;
@@ -94,112 +94,120 @@ export class Queue implements Shape {
     return retCircle;
   }
 
-  collisionXRight(xRight: number): boolean {
+  public collisionXRight(xRight: number): boolean {
     return this.bottomBarrier.collisionXRight(xRight);
   }
 
-  collisionXLeft(xLeft: number): boolean {
+  public collisionXLeft(xLeft: number): boolean {
     return this.topBarrier.collisionXLeft(xLeft);
   }
 
-  collisionYTop(yTop: number): boolean {
+  public collisionYTop(yTop: number): boolean {
     return this.topBarrier.collisionYTop(yTop);
   }
 
-  collisionYBottom(yBottom: number): boolean {
+  public collisionYBottom(yBottom: number): boolean {
     return this.bottomBarrier.collisionYBottom(yBottom);
   }
 
-  getType(): string {
+  public getType(): string {
     return this.constructor.name;
   }
 
-  setColor(color: string): void {
+  public setColor(color: string): void {
     this.color = color;
   }
 
-  getColor(): string | null | undefined {
+  public getColor(): string | null | undefined {
     return this.color;
   }
 
-  getXPos(): number {
+  public getXPos(): number {
     return this.x;
   }
 
-  getYPos(): number {
+  public getYPos(): number {
     return this.y;
   }
 
-  setXPos(x: number, animate?: AnimateConfig): void {
-    throw new Error('Method not implemented.');
+  public setXPos(x: number, animate?: AnimateConfig): void {
+    this.moveX(x - this.x, animate);
   }
 
-  setYPos(y: number, animate?: AnimateConfig): void {
-    throw new Error('Method not implemented.');
+  public setYPos(y: number, animate?: AnimateConfig): void {
+    this.moveY(y - this.y, animate);
   }
 
-  getPos(): [number, number] {
+  public getPos(): [number, number] {
     return [this.x, this.y];
   }
 
-  setPos(x: number, y: number, animate?: AnimateConfig): void {
-    //this.set
+  public setPos(x: number, y: number, animate?: AnimateConfig): void {
+    this.move(x - this.x, y - this.y, animate);
   }
 
-  move(xVal: number, yVal: number, animate?: AnimateConfig): void {
+  public move(xVal: number, yVal: number, animate?: AnimateConfig): void {
     this.topBarrier.move(xVal, yVal, animate);
     this.bottomBarrier.move(xVal, yVal, animate);
     for (const elem of this.queue) {
       elem.move(xVal, yVal, animate);
     }
+    this.x += xVal;
+    this.y += yVal;
   }
 
-  moveX(val: number, animate?: AnimateConfig): void {
+  public moveX(val: number, animate?: AnimateConfig): void {
     this.topBarrier.moveX(val, animate);
     this.bottomBarrier.moveX(val, animate);
     for (const elem of this.queue) {
       elem.moveX(val, animate);
     }
+    this.x += val;
   }
 
-  moveRight(val: number, animate?: AnimateConfig): void {
+  public moveRight(val: number, animate?: AnimateConfig): void {
     this.topBarrier.moveRight(val, animate);
     this.bottomBarrier.moveRight(val, animate);
     for (const elem of this.queue) {
       elem.moveRight(val, animate);
     }
+    this.x += val;
   }
 
-  moveLeft(val: number, animate?: AnimateConfig): void {
+  public moveLeft(val: number, animate?: AnimateConfig): void {
     this.topBarrier.moveLeft(val, animate);
     this.bottomBarrier.moveLeft(val, animate);
     for (const elem of this.queue) {
       elem.moveLeft(val, animate);
     }
+    this.x -= val;
   }
 
-  moveY(val: number, animate?: AnimateConfig): void {
+  public moveY(val: number, animate?: AnimateConfig): void {
     this.topBarrier.moveY(val, animate);
     this.bottomBarrier.moveY(val, animate);
     for (const elem of this.queue) {
       elem.moveY(val, animate);
     }
+    this.y += val;
   }
 
-  moveUp(val: number, animate?: AnimateConfig): void {
+  public moveUp(val: number, animate?: AnimateConfig): void {
     this.topBarrier.moveUp(val, animate);
     this.bottomBarrier.moveUp(val, animate);
     for (const elem of this.queue) {
       elem.moveUp(val, animate);
     }
+    this.y += val;
   }
 
-  moveDown(val: number, animate?: AnimateConfig): void {
+  public moveDown(val: number, animate?: AnimateConfig): void {
     this.topBarrier.moveDown(val, animate);
     this.bottomBarrier.moveDown(val, animate);
     for (const elem of this.queue) {
       elem.moveDown(val, animate);
     }
+    this.y -= val;
   }
 
 }
