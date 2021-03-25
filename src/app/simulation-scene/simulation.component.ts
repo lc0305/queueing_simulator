@@ -50,7 +50,6 @@ export class SimulationComponent implements OnInit {
   constructor(private readonly ngZone: NgZone) { }
 
   public ngOnInit(): void {
-    console.log(percIndex(2, 2));
     if (!this.simulationCanvas) {
       throw new Error('Canvas is not initialized.');
     }
@@ -124,7 +123,6 @@ export class SimulationComponent implements OnInit {
       Object.keys(this.results),
       [Object.values(this.results)]
     );
-    console.log(csvStr);
     saveCSV('queueing_export_' + new Date().getTime().toString(), csvStr);
   }
 
