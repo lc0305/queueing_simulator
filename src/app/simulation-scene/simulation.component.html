@@ -5,16 +5,21 @@
       Your browser does not support the HTML canvas tag.
     </canvas>
     <div class="row">
-      <div class="col-4">
+      <div class="col-3">
         <label>Animation-Speed</label>
         <mat-slider min="60" max="480" step="20" value="240" (valueChange)="slider($event)"></mat-slider>
       </div>
-      <div class="col-4 pt-3">
+      <div class="col-3 pt-3">
         <span>
-          <strong>Throughput:</strong> {{results.throughput || '-'}} Tasks/s
+          <strong>Incoming Tasks:</strong> {{numberOr(results.incomingTasks, "-")}} Tasks/s
         </span>
       </div>
-      <div class="col-4 pt-2">
+      <div class="col-3 pt-3">
+        <span>
+          <strong>Throughput:</strong> {{numberOr(results.throughput, "-")}} Tasks/s
+        </span>
+      </div>
+      <div class="col-3 pt-2">
         <div class="form-group">
           <button type="button" (click)="saveCSV()" mat-raised-button>
             Save Results to CSV
@@ -51,26 +56,26 @@
       <tr>
         <td>
           <strong>
-            Milliseconds
+            Seconds
           </strong>
         </td>
         <td>
-          {{results.mean || "-"}}
+          {{numberOr(results.mean, "-")}}
         </td>
         <td>
-          {{results.median || "-"}}
+          {{numberOr(results.median, "-")}}
         </td>
         <td>
-          {{results.p90 || "-"}}
+          {{numberOr(results.p90, "-")}}
         </td>
         <td>
-          {{results.p95 || "-"}}
+          {{numberOr(results.p95, "-")}}
         </td>
         <td>
-          {{results.p99 || "-"}}
+          {{numberOr(results.p99, "-")}}
         </td>
         <td>
-          {{results.p999 || "-"}}
+          {{numberOr(results.p999, "-")}}
         </td>
       </tr>
     </table>
@@ -83,14 +88,14 @@
       <div class="col-12 text-center">
         <form #settingsForm="ngForm" (ngSubmit)="settingsChanged()">
           <div class="form-group">
-            <label for="arrivalWeightList">Arrival Weight-List</label>
-            <input type="text" class="form-control" id="arrivalWeightList" required
-              [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList">
+            <label for="arrivalWeightList">Arrival (in ms) Weight-List ([weight, value], ...)</label>
+            <textarea matInput type="text" id="arrivalWeightList" class="form-control" required
+            [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList"></textarea>
           </div>
           <div class="form-group">
             <label for="taskWeightList">Task-Duration (in ms) Weight-List</label>
-            <input type="text" class="form-control" id="taskWeightList" required [(ngModel)]="model.taskWeightList"
-              name="taskWeightList">
+            <textarea matInput class="form-control" type="text" id="taskWeightList" required [(ngModel)]="model.taskWeightList"
+            name="taskWeightList"></textarea>
           </div>
           <div class="form-group">
             <label for="batchSize">Batch-size for the processors</label>

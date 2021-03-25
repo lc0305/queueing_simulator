@@ -1,18 +1,19 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
-import { insertSorted, saveCSV, toCSV } from '../common';
+import { insertSorted, numberOr, round, saveCSV, toCSV } from '../common';
 import { Shape } from '../geometry';
 import { Processor, TaskFactory } from '../simulation';
 import { TaskGeneratorCancel, WeightListEntry } from '../simulation/taskfactory';
 import { TaskQueue } from '../simulation/taskqueue';
 
 class Results {
-  throughput = 0;
-  mean = 0;
-  median = 0;
-  p90 = 0;
-  p95 = 0;
-  p99 = 0;
-  p999 = 0;
+  incomingTasks?: undefined | null | number;
+  throughput?: undefined | null | number;
+  mean?: undefined | null | number;
+  median?: undefined | null | number;
+  p90?: undefined | null | number;
+  p95?: undefined | null | number;
+  p99?: undefined | null | number;
+  p999?: undefined | null | number;
 }
 
 const percIndex = (len: number, magnitude: number): number => Math.round((len / magnitude) * (magnitude - 1));
@@ -33,9 +34,10 @@ export class SimulationComponent implements OnInit {
   private taskQueues = new Array<TaskQueue>();
   private processors = new Array<Processor>();
   private taskGenCancel?: undefined | TaskGeneratorCancel;
-  protected durations = new Array<number>();
-  protected overallDuration = 0;
-  protected simulationStart = 0;
+  private durations = new Array<number>();
+  private overallDuration = 0;
+  private overallTasks = 0;
+  private simulationStart = 0;
 
   public model = {
     arrivalWeightList: '[0.4, 750], [0.2, 1000], [0.3, 500], [0.1, 2000]',
@@ -116,14 +118,19 @@ export class SimulationComponent implements OnInit {
     this.durations = new Array<number>();
     this.results = new Results();
     this.overallDuration = 0;
+    this.overallTasks = 0;
   }
 
   public saveCSV(): void {
     const csvStr = toCSV(
       Object.keys(this.results),
-      [Object.values(this.results)]
+      [Object.values(this.results).map(value => numberOr(value, NaN))],
     );
     saveCSV('queueing_export_' + new Date().getTime().toString(), csvStr);
+  }
+
+  public numberOr(value: any, or: string): number | string {
+    return numberOr<string>(value, or);
   }
 
   private parseWeightList(input: string): WeightListEntry[] {
@@ -134,12 +141,12 @@ export class SimulationComponent implements OnInit {
   private async pushTasks(): Promise<void> {
     const [taskGenerator, taskGenCancel] = this.taskFactory.createGenerator();
     this.taskGenCancel = taskGenCancel;
-    let i = 0;
     for await (const task of taskGenerator) {
-      const qIndex = i++ % this.taskQueues.length;
+      const qIndex = this.overallTasks++ % this.taskQueues.length;
       task.setXPos((this.simulationCanvas.nativeElement.width / this.model.queueCount) * qIndex);
       task.setCompletionCallback(completedTask => this.updateResults(completedTask.getWaitTime()));
       this.taskQueues[qIndex].push(task);
+      this.results.incomingTasks = round(this.overallTasks / ((new Date().getTime() - this.simulationStart) / 1000), 3);
     }
   }
 
@@ -158,28 +165,28 @@ export class SimulationComponent implements OnInit {
     insertSorted(this.durations, time);
     this.overallDuration += time;
     const len = this.durations.length;
-    this.results.mean = Math.round(this.overallDuration / len);
-    this.results.throughput = Math.round((len / ((new Date().getTime() - this.simulationStart) / 1000)) * 100) / 100;
+    this.results.mean = round(Math.round(this.overallDuration / len) / 1000, 3);
+    this.results.throughput = round(len / ((new Date().getTime() - this.simulationStart) / 1000), 3);
     if (len < 2) {
       return;
     }
-    this.results.median = this.durations[percIndex(len, 2)];
+    this.results.median = round(this.durations[percIndex(len, 2)] / 1000, 3);
     if (len < 10) {
       return;
     }
-    this.results.p90 = this.durations[percIndex(len, 10)];
+    this.results.p90 = round(this.durations[percIndex(len, 10)] / 1000, 3);
     if (len < 20) {
       return;
     }
-    this.results.p95 = this.durations[percIndex(len, 20)];
+    this.results.p95 = round(this.durations[percIndex(len, 20)] / 1000, 3);
     if (len < 100) {
       return;
     }
-    this.results.p99 = this.durations[percIndex(len, 100)];
+    this.results.p99 = round(this.durations[percIndex(len, 100)] / 1000, 3);
     if (len < 1000) {
       return;
     }
-    this.results.p999 = this.durations[percIndex(len, 1000)];
+    this.results.p999 = round(this.durations[percIndex(len, 1000)] / 1000, 3);
   }
 
   public slider(val: number | null): void {
