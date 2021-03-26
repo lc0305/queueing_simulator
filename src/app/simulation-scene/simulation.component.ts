@@ -1,9 +1,7 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
-import { insertSorted, numberOr, round, saveCSV, toCSV } from '../common';
+import { insertSorted, numberOr, round, saveCSV, stddevMinMax, toCSV } from '../common';
 import { Shape } from '../geometry';
-import { Processor, TaskFactory } from '../simulation';
-import { TaskGeneratorCancel, WeightListEntry } from '../simulation/taskfactory';
-import { TaskQueue } from '../simulation/taskqueue';
+import { Processor, TaskFactory, TaskQueue, TaskGeneratorCancel, WeightListEntry, WeightList, RandomGeneratorTypes, UniformDistribution, NormalDistribution, RandomGenerator } from '../simulation';
 
 class Results {
   incomingTasks?: undefined | null | number;
@@ -40,6 +38,12 @@ export class SimulationComponent implements OnInit {
   private simulationStart = 0;
 
   public model = {
+    arrivalRateRandomGeneratorType: RandomGeneratorTypes.WeightList,
+    arrivalRateRandomMin: 100,
+    arrivalRateRandomMax: 2000,
+    taskSizeRandomGeneratorType: RandomGeneratorTypes.WeightList,
+    taskSizeRandomMin: 200,
+    taskSizeRandomMax: 2100,
     arrivalWeightList: '[0.4, 750], [0.2, 1000], [0.3, 500], [0.1, 2000]',
     taskWeightList: '[0.4, 3000], [0.2, 5000], [0.3, 4000], [0.05, 10000], [0.05, 20000]',
     batchSize: '1',
@@ -85,9 +89,36 @@ export class SimulationComponent implements OnInit {
       throw new Error('Processors must be greater than queues.');
     }
     this.cleanScene();
+
+    let taskSizeRandGen: RandomGenerator;
+    switch (this.model.taskSizeRandomGeneratorType) {
+      case RandomGeneratorTypes.NormalDistribution:
+        taskSizeRandGen = new NormalDistribution(this.model.taskSizeRandomMin, this.model.taskSizeRandomMax);
+        break;
+      case RandomGeneratorTypes.UniformDistribution:
+        taskSizeRandGen = new UniformDistribution(this.model.taskSizeRandomMin, this.model.taskSizeRandomMax);
+        break;
+      default:
+        taskSizeRandGen = new WeightList(this.parseWeightList(this.model.taskWeightList));
+        break;
+    }
+
+    let arrivalRateRandGen: RandomGenerator;
+    switch (this.model.arrivalRateRandomGeneratorType) {
+      case RandomGeneratorTypes.NormalDistribution:
+        arrivalRateRandGen = new NormalDistribution(this.model.arrivalRateRandomMin, this.model.arrivalRateRandomMax);
+        break;
+      case RandomGeneratorTypes.UniformDistribution:
+        arrivalRateRandGen = new UniformDistribution(this.model.arrivalRateRandomMin, this.model.arrivalRateRandomMax);
+        break;
+      default:
+        arrivalRateRandGen = new WeightList(this.parseWeightList(this.model.arrivalWeightList));
+        break;
+    }
+
     this.taskFactory = new TaskFactory(this.ctx, 20, this.simulationCanvas.nativeElement.height,
-      this.parseWeightList(this.model.arrivalWeightList),
-      this.parseWeightList(this.model.taskWeightList),
+      taskSizeRandGen,
+      arrivalRateRandGen,
     );
     const stepP = this.simulationCanvas.nativeElement.width / this.model.processorCount;
     for (let i = 0; i < this.model.processorCount; ++i) {
@@ -137,9 +168,13 @@ export class SimulationComponent implements OnInit {
     return numberOr<string>(value, or);
   }
 
+  public stddevMinMax(min: number, max: number): number {
+    return Math.round(stddevMinMax(min, max));
+  }
+
   private parseWeightList(input: string): WeightListEntry[] {
     const list = JSON.parse(`[${input}]`) as Array<[number, number]>;
-    return list.map(([weight, size]) => ({weight, size}));
+    return list.map(([weight, size]) => ({ weight, size }));
   }
 
   private async pushTasks(): Promise<void> {
