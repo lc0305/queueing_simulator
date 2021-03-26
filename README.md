@@ -1,4 +1,6 @@
-# Queuessim
+# Queueing Simulator
+
+[Check it out](https://lc0305.github.io/queueing_simulator/)
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.5.
 
