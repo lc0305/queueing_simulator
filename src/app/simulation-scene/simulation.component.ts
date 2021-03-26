@@ -63,17 +63,21 @@ export class SimulationComponent implements OnInit {
   }
 
   private startSimulation(): void {
-    if (this.taskGenCancel) {
-      this.taskGenCancel.cancel();
+    try {
+      if (this.taskGenCancel) {
+        this.taskGenCancel.cancel();
+      }
+      this.createScene();
+      if (this.intervalHandle !== null) {
+        clearInterval(this.intervalHandle);
+      }
+      this.intervalHandle = setInterval(this.drawFrame, this.interval) as unknown as number;
+      this.pushTasks();
+      this.startProcessors();
+      this.simulationStart = new Date().getTime();
+    } catch (err) {
+      alert(err.message);
     }
-    this.createScene();
-    if (this.intervalHandle !== null) {
-      clearInterval(this.intervalHandle);
-    }
-    this.intervalHandle = setInterval(this.drawFrame, this.interval) as unknown as number;
-    this.pushTasks();
-    this.startProcessors();
-    this.simulationStart = new Date().getTime();
   }
 
   private createScene(): void {
@@ -103,7 +107,7 @@ export class SimulationComponent implements OnInit {
       const tq = new TaskQueue(
         this.ctx,
         stepQ * i + (stepQ / 2 - (this.model.queueSize * 40) / 2),
-        350,
+        400,
         this.model.queueSize,
       );
       this.taskQueues.push(tq);

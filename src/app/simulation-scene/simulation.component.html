@@ -1,134 +1,173 @@
-<main class="row">
-  <div class="col-9 text-center p-4">
-    <h1><strong>Queueing Simulator</strong> Alpha</h1>
-    <canvas #simulation width="1000" height="450" style="border:1px solid #000000;">
-      Your browser does not support the HTML canvas tag.
-    </canvas>
-    <div class="row">
-      <div class="col-3">
-        <label>Animation-Speed</label>
-        <mat-slider min="60" max="480" step="20" value="240" (valueChange)="slider($event)"></mat-slider>
-      </div>
-      <div class="col-3 pt-3">
-        <span>
-          <strong>Incoming Tasks:</strong> {{numberOr(results.incomingTasks, "-")}} Tasks/s
-        </span>
-      </div>
-      <div class="col-3 pt-3">
-        <span>
-          <strong>Throughput:</strong> {{numberOr(results.throughput, "-")}} Tasks/s
-        </span>
-      </div>
-      <div class="col-3 pt-2">
-        <div class="form-group">
-          <button type="button" (click)="saveCSV()" mat-raised-button>
-            Save Results to CSV
-          </button>
-        </div>
-      </div>
-    </div>
-    <table class="table">
-      <thead>
-        <td style="width: 14.28%">
-          <strong>
-            Queueing Delay
-          </strong>
-        </td>
-        <td style="width: 14.28%">
-          Mean
-        </td>
-        <td style="width: 14.28%">
-          Median (P50)
-        </td>
-        <td style="width: 14.28%">
-          P90
-        </td>
-        <td style="width: 14.28%">
-          P95
-        </td>
-        <td style="width: 14.28%">
-          P99
-        </td>
-        <td style="width: 14.28%">
-          P99.9
-        </td>
-      </thead>
-      <tr>
-        <td>
-          <strong>
-            Seconds
-          </strong>
-        </td>
-        <td>
-          {{numberOr(results.mean, "-")}}
-        </td>
-        <td>
-          {{numberOr(results.median, "-")}}
-        </td>
-        <td>
-          {{numberOr(results.p90, "-")}}
-        </td>
-        <td>
-          {{numberOr(results.p95, "-")}}
-        </td>
-        <td>
-          {{numberOr(results.p99, "-")}}
-        </td>
-        <td>
-          {{numberOr(results.p999, "-")}}
-        </td>
-      </tr>
-    </table>
-  </div>
-  <div class="col-3 text-center p-4">
-    <h1>
-      <strong>Settings</strong>
-    </h1>
-    <div class="row">
-      <div class="col-12 text-center">
+<!--<main>-->
+  <mat-drawer-container class="mat-drawer-container row" autosize>
+    <mat-drawer #drawer mode="side" class="mat-drawer col-3" opened="true" position="start">
+      <div class="p-4">
+        <h1 class="text-center">
+          <strong>Settings</strong>
+        </h1>
         <form #settingsForm="ngForm" (ngSubmit)="settingsChanged()">
-          <div class="form-group">
-            <label for="arrivalWeightList">Arrival (in ms) Weight-List ([weight, value], ...)</label>
-            <textarea matInput type="text" id="arrivalWeightList" class="form-control" required
-            [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList"></textarea>
+          <div class="row p-1">
+            <div class="col-12">
+              <div class="form-group">
+                <label for="arrivalWeightList">Arrival Weight-List ([weight, arrival in ms], ...)</label>
+                <textarea matInput type="text" id="arrivalWeightList" class="form-control" required
+                  [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="taskWeightList">Task-Duration Weight-List ([weight, duration in ms], ...)</label>
+                <textarea matInput class="form-control" type="text" id="taskWeightList" required
+                  [(ngModel)]="model.taskWeightList" name="taskWeightList"></textarea>
+              </div>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="taskWeightList">Task-Duration (in ms) Weight-List</label>
-            <textarea matInput class="form-control" type="text" id="taskWeightList" required [(ngModel)]="model.taskWeightList"
-            name="taskWeightList"></textarea>
+          <div class="row p-1">
+            <div class="col-6 float-left">
+              <label for="batchSize">Batch-Size</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-select required [(ngModel)]="model.batchSize" id="batchSize" name="batchSize" class="text-center">
+                <mat-option value="1">1</mat-option>
+                <mat-option value="2">2</mat-option>
+                <mat-option value="4">4</mat-option>
+                <mat-option value="8">8</mat-option>
+                <mat-option value="-1">All</mat-option>
+              </mat-select>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="batchSize">Batch-size for the processors</label>
-            <mat-select required [(ngModel)]="model.batchSize" id="batchSize" name="batchSize">
-              <mat-option value="1">1</mat-option>
-              <mat-option value="2">2</mat-option>
-              <mat-option value="4">4</mat-option>
-              <mat-option value="8">8</mat-option>
-              <mat-option value="-1">All</mat-option>
-            </mat-select>
+          <div class="row p-1">
+            <div class="col-6 float-left pt-2">
+              <label for="processorCount">Processor-Count</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-slider min="1" max="12" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.processorCount"
+                id="processorCount" name="processorCount"></mat-slider>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="processorCount">Processor Count</label>
-            <mat-slider min="1" max="12" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.processorCount"
-              id="processorCount" name="processorCount"></mat-slider>
+          <div class="row p-1">
+            <div class="col-6 float-left pt-2">
+              <label for="queueCount">Queue-Count</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-slider min="1" max="4" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueCount"
+                id="queueCount" name="queueCount"></mat-slider>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="queueCount">Queue Count</label>
-            <mat-slider min="1" max="4" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueCount"
-              id="queueCount" name="queueCount"></mat-slider>
+          <div class="row p-1">
+            <div class="col-6 float-left pt-2">
+              <label for="queueSize">Queue-Size</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-slider min="1" max="20" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueSize"
+                id="queueSize" name="queueSize"></mat-slider>
+            </div>
           </div>
-          <div class="form-group">
-            <label for="queueSize">Queue Size</label>
-            <mat-slider min="1" max="20" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueSize"
-              id="queueSize" name="queueSize"></mat-slider>
-          </div>
-          <div class="form-group">
-            <button type="submit" color="primary" mat-raised-button>
-              Start Simulation
-            </button>
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group text-center">
+                <button type="submit" color="primary" mat-raised-button>
+                  Start Simulation
+                </button>
+              </div>
+            </div>
           </div>
         </form>
       </div>
-    </div>
-  </div>
-</main>
+    </mat-drawer>
+    <mat-drawer-content class="mat-drawer-content text-center col-9 center-block" position="end">
+      <div class="row p-2">
+        <div class="col-2">
+          <button type="button" mat-raised-button (click)="drawer.toggle()">
+            <img src="/assets/settings-24px.svg" alt="Settings Icon">
+          </button>
+        </div>
+        <div class="col-8">
+          <h1><strong>Queueing Simulator</strong> Alpha</h1>
+        </div>
+        <div class="col-2">
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-12">
+          <canvas #simulation width=1300 height=500 style="border:1px solid #000000;">
+            Your browser does not support the HTML canvas tag.
+          </canvas>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-3">
+          <label>Animation-Speed</label>
+          <mat-slider min="60" max="480" step="20" value="240" (valueChange)="slider($event)"></mat-slider>
+        </div>
+        <div class="col-3 pt-3">
+          <span>
+            <strong>Incoming Tasks:</strong> {{numberOr(results.incomingTasks, "-")}} Tasks/s
+          </span>
+        </div>
+        <div class="col-3 pt-3">
+          <span>
+            <strong>Throughput:</strong> {{numberOr(results.throughput, "-")}} Tasks/s
+          </span>
+        </div>
+        <div class="col-3 pt-2">
+          <div class="form-group">
+            <button type="button" (click)="saveCSV()" mat-raised-button>
+              Save Results to CSV
+            </button>
+          </div>
+        </div>
+      </div>
+      <table class="table">
+        <thead>
+          <td style="width: 14.28%">
+            <strong>
+              Queueing Delay
+            </strong>
+          </td>
+          <td style="width: 14.28%">
+            Mean
+          </td>
+          <td style="width: 14.28%">
+            Median (P50)
+          </td>
+          <td style="width: 14.28%">
+            P90
+          </td>
+          <td style="width: 14.28%">
+            P95
+          </td>
+          <td style="width: 14.28%">
+            P99
+          </td>
+          <td style="width: 14.28%">
+            P99.9
+          </td>
+        </thead>
+        <tr>
+          <td>
+            <strong>
+              Seconds
+            </strong>
+          </td>
+          <td>
+            {{numberOr(results.mean, "-")}}
+          </td>
+          <td>
+            {{numberOr(results.median, "-")}}
+          </td>
+          <td>
+            {{numberOr(results.p90, "-")}}
+          </td>
+          <td>
+            {{numberOr(results.p95, "-")}}
+          </td>
+          <td>
+            {{numberOr(results.p99, "-")}}
+          </td>
+          <td>
+            {{numberOr(results.p999, "-")}}
+          </td>
+        </tr>
+      </table>
+    </mat-drawer-content>
+  </mat-drawer-container>
+<!--</main>-->

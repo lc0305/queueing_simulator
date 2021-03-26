@@ -4,6 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSliderModule } from '@angular/material/slider';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
+import { MatSidenavModule } from '@angular/material/sidenav';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { SimulationComponent } from './simulation-scene/simulation.component';
@@ -28,6 +29,7 @@ import { FooterComponent } from './footer/footer.component';
     MatSliderModule,
     MatSelectModule,
     MatInputModule,
+    MatSidenavModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
