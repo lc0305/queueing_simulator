@@ -31,7 +31,7 @@ export class SimulationComponent implements OnInit {
   private interval = Math.round(1000 / 240);
   private taskQueues = new Array<TaskQueue>();
   private processors = new Array<Processor>();
-  private taskGenCancel?: undefined | TaskGeneratorCancel;
+  private taskGenCancel?: undefined | null | TaskGeneratorCancel;
   private durations = new Array<number>();
   private overallDuration = 0;
   private overallTasks = 0;
@@ -68,19 +68,25 @@ export class SimulationComponent implements OnInit {
 
   private startSimulation(): void {
     try {
-      if (this.taskGenCancel) {
-        this.taskGenCancel.cancel();
-      }
+      this.stopSimulation();
       this.createScene();
-      if (this.intervalHandle !== null) {
-        clearInterval(this.intervalHandle);
-      }
       this.intervalHandle = setInterval(this.drawFrame, this.interval) as unknown as number;
       this.pushTasks();
       this.startProcessors();
       this.simulationStart = new Date().getTime();
     } catch (err) {
       alert(err.message);
+    }
+  }
+
+  public stopSimulation(): void {
+    if (this.taskGenCancel) {
+      this.taskGenCancel.cancel();
+      this.taskGenCancel = null;
+    }
+    if (this.intervalHandle !== null) {
+      clearInterval(this.intervalHandle);
+      this.intervalHandle = null;
     }
   }
 
@@ -138,7 +144,7 @@ export class SimulationComponent implements OnInit {
       const tq = new TaskQueue(
         this.ctx,
         stepQ * i + (stepQ / 2 - (this.model.queueSize * 40) / 2),
-        400,
+        350,
         this.model.queueSize,
       );
       this.taskQueues.push(tq);
@@ -183,7 +189,7 @@ export class SimulationComponent implements OnInit {
     for await (const task of taskGenerator) {
       const qIndex = this.overallTasks++ % this.taskQueues.length;
       task.setXPos((this.simulationCanvas.nativeElement.width / this.model.queueCount) * qIndex);
-      task.setCompletionCallback(completedTask => this.updateResults(completedTask.getWaitTime()));
+      task.setCompletionCallback(completedTask => this.updateResults(completedTask.getDelayTime()));
       this.taskQueues[qIndex].push(task);
       this.results.incomingTasks = round(this.overallTasks / ((new Date().getTime() - this.simulationStart) / 1000), 3);
     }
@@ -229,9 +235,9 @@ export class SimulationComponent implements OnInit {
   }
 
   public slider(val: number | null): void {
+    this.interval = Math.round(1000 / (val || 1));
     if (this.intervalHandle !== null) {
       clearInterval(this.intervalHandle);
-      this.interval = Math.round(1000 / (val || 1));
       this.intervalHandle = setInterval(this.drawFrame, this.interval) as unknown as number;
     }
   }
