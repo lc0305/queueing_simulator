@@ -1,5 +1,5 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
-import { insertSorted, numberOr, round, saveCSV, stddevMinMax, toCSV } from '../common';
+import { insertSorted, medianMinMax, numberOr, round, saveCSV, stdevMinMax, toCSV } from '../common';
 import { Shape } from '../geometry';
 import { Processor, TaskFactory, TaskQueue, TaskGeneratorCancel, WeightListEntry, WeightList, RandomGeneratorTypes, UniformDistribution, NormalDistribution, RandomGenerator } from '../simulation';
 
@@ -174,8 +174,12 @@ export class SimulationComponent implements OnInit {
     return numberOr<string>(value, or);
   }
 
-  public stddevMinMax(min: number, max: number): number {
-    return Math.round(stddevMinMax(min, max));
+  public stdevMinMax(min: number, max: number): number {
+    return Math.round(stdevMinMax(min, max));
+  }
+
+  public medianMinMax(min: number, max: number): number {
+    return Math.round(medianMinMax(min, max));
   }
 
   private parseWeightList(input: string): WeightListEntry[] {

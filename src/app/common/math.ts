@@ -31,4 +31,6 @@ export const randomNormalMinMax = (min: number, max: number, skew = 1): number =
   return num * (max - min) + min;
 };
 
-export const stddevMinMax = (min: number, max: number, z = 3.6): number => ((max - min) / 2) / z;
+export const stdevMinMax = (min: number, max: number, z = 3.6): number => ((max - min) / 2) / z;
+
+export const medianMinMax = (min: number, max: number): number => ((max - min) / 2) + min;

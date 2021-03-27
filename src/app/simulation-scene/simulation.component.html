@@ -45,7 +45,10 @@
             <div class="row">
               <ng-container *ngIf="model.arrivalRateRandomGeneratorType === '1'">
                 <div class="text-center col-12">
-                  <strong>&sigma;</strong> = {{stddevMinMax(model.arrivalRateRandomMin, model.arrivalRateRandomMax)}}
+                  <span><strong>&mu;</strong> = {{medianMinMax(model.arrivalRateRandomMin,
+                    model.arrivalRateRandomMax)}}</span>
+                  <span><strong> &sigma;</strong> = {{stdevMinMax(model.arrivalRateRandomMin,
+                    model.arrivalRateRandomMax)}}</span>
                 </div>
               </ng-container>
             </div>
@@ -90,7 +93,10 @@
             <div class="row">
               <ng-container *ngIf="model.taskSizeRandomGeneratorType === '1'">
                 <div class="text-center col-12">
-                  <strong>&sigma;</strong> = {{stddevMinMax(model.taskSizeRandomMin, model.taskSizeRandomMax)}}
+                  <span><strong>&mu;</strong> = {{medianMinMax(model.taskSizeRandomMin,
+                    model.taskSizeRandomMax)}}</span>
+                  <span><strong> &sigma;</strong> = {{stdevMinMax(model.taskSizeRandomMin,
+                    model.taskSizeRandomMax)}}</span>
                 </div>
               </ng-container>
             </div>
