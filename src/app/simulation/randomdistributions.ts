@@ -10,8 +10,11 @@ export class NormalDistribution implements RandomGenerator {
     protected max: number,
     protected skew = 1,
   ) {
+    if (min < 0) {
+      throw new Error('Min must be greater than 0.');
+    }
     if (max < min) {
-      throw new Error('max must be greater than min.');
+      throw new Error('Max must be greater than min.');
     }
   }
 
@@ -25,8 +28,11 @@ export class UniformDistribution implements RandomGenerator {
     protected min: number,
     protected max: number,
   ) {
+    if (min < 0) {
+      throw new Error('Min must be greater than 0.');
+    }
     if (max < min) {
-      throw new Error('max must be greater than min.');
+      throw new Error('Max must be greater than min.');
     }
   }
 
