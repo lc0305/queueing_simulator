@@ -11,9 +11,9 @@ export class TaskFactory {
     protected arrivalRate: RandomGenerator,
   ) { }
 
-  public createTask(): Task {
+  public createTask(taskCancel?: undefined | null | TaskGeneratorCancel): Task {
     const weight = this.taskSize.getRandom();
-    const task = new Task(this.ctx, this.x, this.y, weight, toColor(weight));
+    const task = new Task(this.ctx, this.x, this.y, weight, toColor(weight), taskCancel);
     return task;
   }
 
@@ -28,8 +28,9 @@ export class TaskFactory {
 }
 
 export async function* TaskGenerator(factory: TaskFactory, taskCancel: TaskGeneratorCancel): AsyncGenerator<Task, void, unknown> {
+  await sleep(0); // do not yield immediately - push back to callback queue
   while (!taskCancel.isCancel()) {
-    yield factory.createTask();
+    yield factory.createTask(taskCancel);
     await factory.wait();
   }
 }
