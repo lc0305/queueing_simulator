@@ -5,6 +5,7 @@ export const toCSV = <H extends Object, V extends Object>(head: Array<H>, values
 
 export const saveCSV = (filename: string, csvStr: string): void => {
   const blob = new Blob([csvStr], { type: 'text/csv;charset=utf-8;' });
+  filename = `${filename}.csv`;
   if (navigator.msSaveBlob) {
     navigator.msSaveBlob(blob, filename);
   } else {
