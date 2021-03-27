@@ -20,28 +20,34 @@
           </div>
         </div>
         <ng-container [ngSwitch]="model.arrivalRateRandomGeneratorType">
-          <div *ngSwitchDefault class="row p-1 pb-2">
-            <div class="col-12">
-              <label for="arrivalWeightList">Minimum Value (in ms)</label>
-              <input matInput type="number" id="arrivalRateRandomMin" class="form-control" required
-                [(ngModel)]="model.arrivalRateRandomMin" name="arrivalRateRandomMin">
-              <label for="arrivalWeightList">Maximum Value (in ms)</label>
-              <input matInput type="number" id="arrivalRateRandomMax" class="form-control" required
-                [(ngModel)]="model.arrivalRateRandomMax" name="arrivalRateRandomMax">
-              <ng-container *ngIf="model.arrivalRateRandomGeneratorType === '1'">
-                <div class="text-center">
-                  <strong>&sigma;</strong> {{stddevMinMax(model.arrivalRateRandomMin, model.arrivalRateRandomMax)}}
-                </div>
-              </ng-container>
-            </div>
-          </div>
           <div *ngSwitchCase="3" class="row p-1 pb-2">
             <div class="col-12">
               <div class="form-group">
-                <label for="arrivalWeightList">Arrival Weight-List ([weight, arrival in ms], ...)</label>
+                <label for="arrivalWeightList">Weight-List ([weight, arrival in ms], ...)</label>
                 <textarea matInput type="text" id="arrivalWeightList" class="form-control" required
                   [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList"></textarea>
               </div>
+            </div>
+          </div>
+          <div *ngSwitchDefault class="p-1 pb-2">
+            <div class="row">
+              <div class="col-6">
+                <label for="arrivalRateRandomMin">Min Value (in ms)</label>
+                <input matInput type="number" id="arrivalRateRandomMin" class="form-control" required
+                  [(ngModel)]="model.arrivalRateRandomMin" name="arrivalRateRandomMin">
+              </div>
+              <div class="col-6">
+                <label for="arrivalRateRandomMax">Max Value (in ms)</label>
+                <input matInput type="number" id="arrivalRateRandomMax" class="form-control" required
+                  [(ngModel)]="model.arrivalRateRandomMax" name="arrivalRateRandomMax">
+              </div>
+            </div>
+            <div class="row">
+              <ng-container *ngIf="model.arrivalRateRandomGeneratorType === '1'">
+                <div class="text-center col-12">
+                  <strong>&sigma;</strong> = {{stddevMinMax(model.arrivalRateRandomMin, model.arrivalRateRandomMax)}}
+                </div>
+              </ng-container>
             </div>
           </div>
         </ng-container>
@@ -59,28 +65,34 @@
           </div>
         </div>
         <ng-container [ngSwitch]="model.taskSizeRandomGeneratorType">
-          <div *ngSwitchDefault class="row p-1 pb-2">
-            <div class="col-12">
-              <label for="arrivalWeightList">Minimum Value (in ms)</label>
-              <input matInput type="number" id="taskSizeRandomMin" class="form-control" required
-                [(ngModel)]="model.taskSizeRandomMin" name="taskSizeRandomMin">
-              <label for="arrivalWeightList">Maximum Value (in ms)</label>
-              <input matInput type="number" id="taskSizeRandomMax" class="form-control" required
-                [(ngModel)]="model.taskSizeRandomMax" name="taskSizeRandomMax">
-              <ng-container *ngIf="model.taskSizeRandomGeneratorType === '1'">
-                <div class="text-center">
-                  <strong>&sigma;</strong> {{stddevMinMax(model.taskSizeRandomMin, model.taskSizeRandomMax)}}
-                </div>
-              </ng-container>
-            </div>
-          </div>
           <div *ngSwitchCase="3" class="row p-1 pb-2">
             <div class="col-12">
               <div class="form-group">
-                <label for="taskWeightList">Task-Duration Weight-List ([weight, duration in ms], ...)</label>
+                <label for="taskWeightList">Weight-List ([weight, duration in ms], ...)</label>
                 <textarea matInput class="form-control" type="text" id="taskWeightList" required
                   [(ngModel)]="model.taskWeightList" name="taskWeightList"></textarea>
               </div>
+            </div>
+          </div>
+          <div *ngSwitchDefault class="p-1 pb-2">
+            <div class="row">
+              <div class="col-6">
+                <label for="taskSizeRandomMin">Min Value (in ms)</label>
+                <input matInput type="number" id="taskSizeRandomMin" class="form-control" required
+                  [(ngModel)]="model.taskSizeRandomMin" name="taskSizeRandomMin">
+              </div>
+              <div class="col-6">
+                <label for="taskSizeRandomMax">Max Value (in ms)</label>
+                <input matInput type="number" id="taskSizeRandomMax" class="form-control" required
+                  [(ngModel)]="model.taskSizeRandomMax" name="taskSizeRandomMax">
+              </div>
+            </div>
+            <div class="row">
+              <ng-container *ngIf="model.taskSizeRandomGeneratorType === '1'">
+                <div class="text-center col-12">
+                  <strong>&sigma;</strong> = {{stddevMinMax(model.taskSizeRandomMin, model.taskSizeRandomMax)}}
+                </div>
+              </ng-container>
             </div>
           </div>
         </ng-container>
@@ -121,7 +133,7 @@
             <label for="queueSize">Queue-Size</label>
           </div>
           <div class="col-6 float-left">
-            <mat-slider min="1" max="25" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueSize"
+            <mat-slider min="1" max="24" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueSize"
               id="queueSize" name="queueSize"></mat-slider>
           </div>
         </div>
@@ -130,6 +142,15 @@
             <div class="form-group text-center">
               <button type="submit" color="primary" mat-raised-button>
                 Start Simulation
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="form-group text-center">
+              <button type="button" (click)="stopSimulation()" mat-raised-button>
+                Stop Simulation
               </button>
             </div>
           </div>
@@ -152,7 +173,7 @@
     </div>
     <div class="row">
       <div class="col-12">
-        <canvas #simulation width=1300 height=500 style="border:1px solid #000000;">
+        <canvas #simulation width=1050 height=450 style="border:1px solid #000000;">
           Your browser does not support the HTML canvas tag.
         </canvas>
       </div>
