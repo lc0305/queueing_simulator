@@ -151,14 +151,16 @@ export class SimulationComponent implements OnInit {
         arrivalRateRandGen = new WeightList(this.parseWeightList(this.model.arrivalWeightList));
         break;
     }
-    this.utilization.arrival = round(1000 / arrivalRateRandGen.getMean(), 3);
-    const service = round((1000 / taskSizeRandGen.getMean()) * this.model.processorCount, 3);
-    if (this.utilization.arrival <= service) {
+
+    const arrival = arrivalRateRandGen.getMean();
+    const service = taskSizeRandGen.getMean() / this.model.processorCount;
+    this.utilization.arrival = round(1000 / arrival, 3);
+    if (service <= arrival) {
       this.utilization.service = this.utilization.arrival;
       this.utilization.factor = 1;
     } else {
-      this.utilization.service = service;
-      this.utilization.factor = round(this.utilization.arrival / service, 3);
+      this.utilization.service = round(1000 / service, 3);
+      this.utilization.factor = round(arrival / service, 3);
     }
 
     this.taskFactory = new TaskFactory(this.ctx, 20, this.simulationCanvas.nativeElement.height,
@@ -215,7 +217,7 @@ export class SimulationComponent implements OnInit {
 
   public utilizationFactor(lambda: number | null | undefined, mu: number | null | undefined): number | null {
     if (typeof lambda === 'number' && typeof mu === 'number') {
-      return round(lambda / mu, 3);
+      return round(mu / lambda, 3);
     }
     return null;
   }
