@@ -1,4 +1,4 @@
-import { randomNormalMinMax } from '../common';
+import { randomExponential, randomNormalMinMax, randomPoisson } from '../common';
 
 export interface RandomGenerator {
   getRandom(): number;
@@ -37,7 +37,32 @@ export class UniformDistribution implements RandomGenerator {
   }
 
   public getRandom(): number {
-    return Math.round(Math.random() * (this.max - this.min)) + this.min;
+    return Math.floor(Math.random() * (this.max - this.min + 1)) + this.min;
+  }
+}
+
+export class PoissonDistribution implements RandomGenerator {
+  protected poisson: () => number;
+
+  constructor(lambda: number) {
+    this.poisson = randomPoisson(lambda);
+  }
+
+  public getRandom(): number {
+    return this.poisson();
+  }
+}
+
+export class ExponentialDistribution implements RandomGenerator {
+
+  constructor(protected mu: number) {
+    if (mu <= 1) {
+      throw new Error('Mu must be greater or equal than 1.');
+    }
+  }
+
+  public getRandom(): number {
+    return randomExponential(this.mu);
   }
 }
 
@@ -74,4 +99,6 @@ export enum RandomGeneratorTypes {
   NormalDistribution = '1',
   UniformDistribution = '2',
   WeightList = '3',
+  PoissonDistribution = '4',
+  ExponentialDistribution = '5',
 }

@@ -2,6 +2,7 @@ import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core'
 import { insertSorted, medianMinMax, numberOr, round, saveCSV, stdevMinMax, toCSV } from '../common';
 import { Shape } from '../geometry';
 import { Processor, TaskFactory, TaskQueue, TaskGeneratorCancel, WeightListEntry, WeightList, RandomGeneratorTypes, UniformDistribution, NormalDistribution, RandomGenerator } from '../simulation';
+import { ExponentialDistribution, PoissonDistribution } from '../simulation/randomdistributions';
 
 class Results {
   incomingTasks?: undefined | null | number;
@@ -43,12 +44,16 @@ export class SimulationComponent implements OnInit {
   private simulationStart = 0;
   public maxQueueSize = 24;
   public model = {
-    arrivalRateRandomGeneratorType: RandomGeneratorTypes.NormalDistribution,
+    arrivalRateRandomGeneratorType: RandomGeneratorTypes.PoissonDistribution,
     arrivalRateRandomMin: 100,
     arrivalRateRandomMax: 1150,
-    taskSizeRandomGeneratorType: RandomGeneratorTypes.WeightList,
+    arrivalRateLambda: 625,
+    arrivalRateMuExp: 625,
+    taskSizeRandomGeneratorType: RandomGeneratorTypes.ExponentialDistribution,
     taskSizeRandomMin: 200,
     taskSizeRandomMax: 2100,
+    taskSizeLambda: 1150,
+    taskSizeMuExp: 1150,
     arrivalWeightList: '[0.4, 100], [0.2, 1000], [0.3, 500], [0.1, 2000]',
     taskWeightList: '[0.4, 3000], [0.2, 5000], [0.3, 4000], [0.05, 10000], [0.05, 20000]',
     batchSize: '1',
@@ -112,6 +117,12 @@ export class SimulationComponent implements OnInit {
       case RandomGeneratorTypes.UniformDistribution:
         taskSizeRandGen = new UniformDistribution(this.model.taskSizeRandomMin, this.model.taskSizeRandomMax);
         break;
+      case RandomGeneratorTypes.PoissonDistribution:
+        taskSizeRandGen = new PoissonDistribution(this.model.taskSizeLambda);
+        break;
+      case RandomGeneratorTypes.ExponentialDistribution:
+        taskSizeRandGen = new ExponentialDistribution(this.model.taskSizeMuExp);
+        break;
       default:
         taskSizeRandGen = new WeightList(this.parseWeightList(this.model.taskWeightList));
         break;
@@ -124,6 +135,12 @@ export class SimulationComponent implements OnInit {
         break;
       case RandomGeneratorTypes.UniformDistribution:
         arrivalRateRandGen = new UniformDistribution(this.model.arrivalRateRandomMin, this.model.arrivalRateRandomMax);
+        break;
+      case RandomGeneratorTypes.PoissonDistribution:
+        arrivalRateRandGen = new PoissonDistribution(this.model.arrivalRateLambda);
+        break;
+      case RandomGeneratorTypes.ExponentialDistribution:
+        arrivalRateRandGen = new ExponentialDistribution(this.model.arrivalRateMuExp);
         break;
       default:
         arrivalRateRandGen = new WeightList(this.parseWeightList(this.model.arrivalWeightList));
