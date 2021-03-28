@@ -55,6 +55,8 @@ export class SimulationComponent implements OnInit {
     processorCount: 1,
     queueSize: 10,
     queueCount: 1,
+    maxQueueCount: 1,
+    maxQueueSize: 24,
     enqueue: Enqueue.Random,
   };
   public results = new Results();
@@ -248,11 +250,28 @@ export class SimulationComponent implements OnInit {
     this.results.p999 = round(this.durations[percIndex(len, 1000)] / 1000, 3);
   }
 
-  public slider(val: number | null): void {
-    this.interval = Math.round(1000 / (val || 1));
+  public sliderAnimation(val: number | null): void {
+    val = (val || 1);
+    this.interval = Math.round(1000 / val);
     if (this.intervalHandle !== null) {
       clearInterval(this.intervalHandle);
       this.intervalHandle = setInterval(this.drawFrame, this.interval) as unknown as number;
+    }
+  }
+
+  public sliderProcessorCount(val: number | null): void {
+    val = (val || 1);
+    this.model.maxQueueCount = val;
+    if (val < this.model.queueCount) {
+      this.model.queueCount = val;
+    }
+  }
+
+  public sliderQueueCount(val: number | null): void {
+    val = (val || 1);
+    this.model.maxQueueSize = Math.floor(24 / val);
+    if (this.model.maxQueueSize < this.model.queueSize) {
+      this.model.queueSize = this.model.maxQueueSize;
     }
   }
 

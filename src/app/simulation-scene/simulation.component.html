@@ -1,160 +1,169 @@
 <!--<main>-->
 <mat-drawer-container class="mat-drawer-container row" autosize>
   <mat-drawer #drawer mode="side" class="mat-drawer col-3" opened="true" position="start">
-    <div class="p-4">
+    <div class="pl-3 pt-2 pt-2">
       <h1 class="text-center">
         <strong>Settings</strong>
       </h1>
       <form #settingsForm="ngForm" (ngSubmit)="settingsChanged()">
-        <div class="row p-1">
-          <div class="col-6 float-left">
-            <label for="arrivalRateRandomGeneratorType">Arrival Random Generator Type</label>
-          </div>
-          <div class="col-6 float-left">
-            <mat-select required [(ngModel)]="model.arrivalRateRandomGeneratorType" id="arrivalRateRandomGeneratorType"
-              name="arrivalRateRandomGeneratorType" class="text-center">
-              <mat-option value="1">Normal Distribution</mat-option>
-              <mat-option value="2">Uniform Distribution</mat-option>
-              <mat-option value="3">Weight-List</mat-option>
-            </mat-select>
-          </div>
-        </div>
-        <ng-container [ngSwitch]="model.arrivalRateRandomGeneratorType">
-          <div *ngSwitchCase="3" class="row p-1 pb-2">
-            <div class="col-12">
-              <div class="form-group">
-                <label for="arrivalWeightList">Weight-List ([weight, arrival in ms], ...)</label>
-                <textarea matInput type="text" id="arrivalWeightList" class="form-control" required
-                  [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList"></textarea>
-              </div>
+        <div class="form-unit">
+          <div class="row p-1 pt-2">
+            <div class="col-6 float-left">
+              <label for="arrivalRateRandomGeneratorType">Task-Arrival Random Generator Type</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-select required [(ngModel)]="model.arrivalRateRandomGeneratorType"
+                id="arrivalRateRandomGeneratorType" name="arrivalRateRandomGeneratorType" class="text-center">
+                <mat-option value="1">Normal Distribution</mat-option>
+                <mat-option value="2">Uniform Distribution</mat-option>
+                <mat-option value="3">Weight-List</mat-option>
+              </mat-select>
             </div>
           </div>
-          <div *ngSwitchDefault class="p-1 pb-2">
-            <div class="row">
-              <div class="col-6">
-                <label for="arrivalRateRandomMin">Min Value (in ms)</label>
-                <input matInput type="number" id="arrivalRateRandomMin" class="form-control" required
-                  [(ngModel)]="model.arrivalRateRandomMin" name="arrivalRateRandomMin">
-              </div>
-              <div class="col-6">
-                <label for="arrivalRateRandomMax">Max Value (in ms)</label>
-                <input matInput type="number" id="arrivalRateRandomMax" class="form-control" required
-                  [(ngModel)]="model.arrivalRateRandomMax" name="arrivalRateRandomMax">
-              </div>
-            </div>
-            <div class="row">
-              <ng-container *ngIf="model.arrivalRateRandomGeneratorType === '1'">
-                <div class="text-center col-12">
-                  <span><strong>&mu;</strong> = {{medianMinMax(model.arrivalRateRandomMin,
-                    model.arrivalRateRandomMax)}}</span>
-                  <span><strong> &sigma;</strong> = {{stdevMinMax(model.arrivalRateRandomMin,
-                    model.arrivalRateRandomMax)}}</span>
+          <ng-container [ngSwitch]="model.arrivalRateRandomGeneratorType">
+            <div *ngSwitchCase="3" class="row p-1">
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="arrivalWeightList">Weight-List ([weight, arrival in ms], ...)</label>
+                  <textarea matInput type="text" id="arrivalWeightList" class="form-control" required
+                    [(ngModel)]="model.arrivalWeightList" name="arrivalWeightList"></textarea>
                 </div>
-              </ng-container>
-            </div>
-          </div>
-        </ng-container>
-        <div class="row p-1">
-          <div class="col-6 float-left">
-            <label for="taskSizeRandomGeneratorType">Task-Duration Random Generator Type</label>
-          </div>
-          <div class="col-6 float-left">
-            <mat-select required [(ngModel)]="model.taskSizeRandomGeneratorType" id="taskSizeRandomGeneratorType"
-              name="taskSizeRandomGeneratorType" class="text-center">
-              <mat-option value="1">Normal Distribution</mat-option>
-              <mat-option value="2">Uniform Distribution</mat-option>
-              <mat-option value="3">Weight-List</mat-option>
-            </mat-select>
-          </div>
-        </div>
-        <ng-container [ngSwitch]="model.taskSizeRandomGeneratorType">
-          <div *ngSwitchCase="3" class="row p-1 pb-2">
-            <div class="col-12">
-              <div class="form-group">
-                <label for="taskWeightList">Weight-List ([weight, duration in ms], ...)</label>
-                <textarea matInput class="form-control" type="text" id="taskWeightList" required
-                  [(ngModel)]="model.taskWeightList" name="taskWeightList"></textarea>
               </div>
             </div>
-          </div>
-          <div *ngSwitchDefault class="p-1 pb-2">
-            <div class="row">
-              <div class="col-6">
-                <label for="taskSizeRandomMin">Min Value (in ms)</label>
-                <input matInput type="number" id="taskSizeRandomMin" class="form-control" required
-                  [(ngModel)]="model.taskSizeRandomMin" name="taskSizeRandomMin">
-              </div>
-              <div class="col-6">
-                <label for="taskSizeRandomMax">Max Value (in ms)</label>
-                <input matInput type="number" id="taskSizeRandomMax" class="form-control" required
-                  [(ngModel)]="model.taskSizeRandomMax" name="taskSizeRandomMax">
-              </div>
-            </div>
-            <div class="row">
-              <ng-container *ngIf="model.taskSizeRandomGeneratorType === '1'">
-                <div class="text-center col-12">
-                  <span><strong>&mu;</strong> = {{medianMinMax(model.taskSizeRandomMin,
-                    model.taskSizeRandomMax)}}</span>
-                  <span><strong> &sigma;</strong> = {{stdevMinMax(model.taskSizeRandomMin,
-                    model.taskSizeRandomMax)}}</span>
+            <div *ngSwitchDefault class="p-1">
+              <div class="row">
+                <div class="col-6">
+                  <label for="arrivalRateRandomMin">Min Value (in ms)</label>
+                  <input matInput type="number" id="arrivalRateRandomMin" class="form-control" required
+                    [(ngModel)]="model.arrivalRateRandomMin" name="arrivalRateRandomMin">
                 </div>
-              </ng-container>
+                <div class="col-6">
+                  <label for="arrivalRateRandomMax">Max Value (in ms)</label>
+                  <input matInput type="number" id="arrivalRateRandomMax" class="form-control" required
+                    [(ngModel)]="model.arrivalRateRandomMax" name="arrivalRateRandomMax">
+                </div>
+              </div>
+              <div class="row">
+                <ng-container *ngIf="model.arrivalRateRandomGeneratorType === '1'">
+                  <div class="text-center col-12">
+                    <span><strong>&mu;</strong> = {{medianMinMax(model.arrivalRateRandomMin,
+                      model.arrivalRateRandomMax)}}</span>
+                    <span><strong> &sigma;</strong> = {{stdevMinMax(model.arrivalRateRandomMin,
+                      model.arrivalRateRandomMax)}}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="form-unit mt-2">
+          <div class="row p-1 pt-2">
+            <div class="col-6 float-left">
+              <label for="taskSizeRandomGeneratorType">Task-Duration Random Generator Type</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-select required [(ngModel)]="model.taskSizeRandomGeneratorType" id="taskSizeRandomGeneratorType"
+                name="taskSizeRandomGeneratorType" class="text-center">
+                <mat-option value="1">Normal Distribution</mat-option>
+                <mat-option value="2">Uniform Distribution</mat-option>
+                <mat-option value="3">Weight-List</mat-option>
+              </mat-select>
             </div>
           </div>
-        </ng-container>
-        <div class="row p-2 pt-1 pb-1">
-          <div class="col-6 float-left">
-            <label for="batchSize">Batch-Size</label>
+          <ng-container [ngSwitch]="model.taskSizeRandomGeneratorType">
+            <div *ngSwitchCase="3" class="row p-1">
+              <div class="col-12">
+                <div class="form-group">
+                  <label for="taskWeightList">Weight-List ([weight, duration in ms], ...)</label>
+                  <textarea matInput class="form-control" type="text" id="taskWeightList" required
+                    [(ngModel)]="model.taskWeightList" name="taskWeightList"></textarea>
+                </div>
+              </div>
+            </div>
+            <div *ngSwitchDefault class="p-1">
+              <div class="row">
+                <div class="col-6">
+                  <label for="taskSizeRandomMin">Min Value (in ms)</label>
+                  <input matInput type="number" id="taskSizeRandomMin" class="form-control" required
+                    [(ngModel)]="model.taskSizeRandomMin" name="taskSizeRandomMin">
+                </div>
+                <div class="col-6">
+                  <label for="taskSizeRandomMax">Max Value (in ms)</label>
+                  <input matInput type="number" id="taskSizeRandomMax" class="form-control" required
+                    [(ngModel)]="model.taskSizeRandomMax" name="taskSizeRandomMax">
+                </div>
+              </div>
+              <div class="row">
+                <ng-container *ngIf="model.taskSizeRandomGeneratorType === '1'">
+                  <div class="text-center col-12">
+                    <span><strong>&mu;</strong> = {{medianMinMax(model.taskSizeRandomMin,
+                      model.taskSizeRandomMax)}}</span>
+                    <span><strong> &sigma;</strong> = {{stdevMinMax(model.taskSizeRandomMin,
+                      model.taskSizeRandomMax)}}</span>
+                  </div>
+                </ng-container>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+        <div class="form-unit mt-2 p-2">
+          <div class="row">
+            <div class="col-6 float-left pt-2">
+              <label for="processorCount">Processor-Count</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-slider min="1" max="12" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.processorCount"
+                id="processorCount" name="processorCount" (valueChange)="sliderProcessorCount($event)"></mat-slider>
+            </div>
           </div>
-          <div class="col-6 float-left">
-            <mat-select required [(ngModel)]="model.batchSize" id="batchSize" name="batchSize" class="text-center">
-              <mat-option value="1">1</mat-option>
-              <mat-option value="2">2</mat-option>
-              <mat-option value="4">4</mat-option>
-              <mat-option value="8">8</mat-option>
-              <mat-option value="-1">All</mat-option>
-            </mat-select>
+          <div class="row">
+            <div class="col-6 float-left">
+              <label for="batchSize">Batch-Size</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-select required [(ngModel)]="model.batchSize" id="batchSize" name="batchSize" class="text-center">
+                <mat-option value="1">1</mat-option>
+                <mat-option value="2">2</mat-option>
+                <mat-option value="4">4</mat-option>
+                <mat-option value="8">8</mat-option>
+                <mat-option value="-1">All</mat-option>
+              </mat-select>
+            </div>
           </div>
         </div>
-        <div class="row p-2">
-          <div class="col-6 float-left pt-2">
-            <label for="processorCount">Processor-Count</label>
+        <div class="form-unit mt-2 p-2">
+          <div class="row">
+            <div class="col-6 float-left pt-2">
+              <label for="queueCount">Queue-Count</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-slider min="1" max="{{model.maxQueueCount}}" step="1" thumbLabel tickInterval="1"
+                [(ngModel)]="model.queueCount" id="queueCount" name="queueCount"
+                (valueChange)="sliderQueueCount($event)"></mat-slider>
+            </div>
           </div>
-          <div class="col-6 float-left">
-            <mat-slider min="1" max="12" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.processorCount"
-              id="processorCount" name="processorCount"></mat-slider>
+          <div class="row" *ngIf="1 < model.queueCount">
+            <div class="col-6 float-left">
+              <label for="enqueue">Enqueue</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-select required [(ngModel)]="model.enqueue" id="enqueue" name="enqueue" class="text-center">
+                <mat-option value="1">Random</mat-option>
+                <mat-option value="2">Round-robin</mat-option>
+              </mat-select>
+            </div>
           </div>
-        </div>
-        <div class="row p-2 pt-1 pb-1">
-          <div class="col-6 float-left">
-            <label for="enqueue">Enqueue</label>
-          </div>
-          <div class="col-6 float-left">
-            <mat-select required [(ngModel)]="model.enqueue" id="enqueue" name="enqueue" class="text-center">
-              <mat-option value="1">Random</mat-option>
-              <mat-option value="2">Round-robin</mat-option>
-            </mat-select>
-          </div>
-        </div>
-        <div class="row p-1">
-          <div class="col-6 float-left pt-2">
-            <label for="queueCount">Queue-Count</label>
-          </div>
-          <div class="col-6 float-left">
-            <mat-slider min="1" max="8" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueCount"
-              id="queueCount" name="queueCount"></mat-slider>
-          </div>
-        </div>
-        <div class="row p-1">
-          <div class="col-6 float-left pt-2">
-            <label for="queueSize">Queue-Size</label>
-          </div>
-          <div class="col-6 float-left">
-            <mat-slider min="1" max="24" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueSize"
-              id="queueSize" name="queueSize"></mat-slider>
+          <div class="row">
+            <div class="col-6 float-left pt-2">
+              <label for="queueSize">Queue-Size</label>
+            </div>
+            <div class="col-6 float-left">
+              <mat-slider min="1" max="{{model.maxQueueSize}}" step="1" thumbLabel tickInterval="1"
+                [(ngModel)]="model.queueSize" id="queueSize" name="queueSize"></mat-slider>
+            </div>
           </div>
         </div>
-        <div class="row">
+        <div class="row mt-2">
           <div class="col-12">
             <div class="form-group text-center">
               <button type="submit" color="primary" mat-raised-button>
@@ -198,11 +207,11 @@
     <div class="row">
       <div class="col-3">
         <label>Animation-Speed</label>
-        <mat-slider min="60" max="480" step="20" value="240" (valueChange)="slider($event)"></mat-slider>
+        <mat-slider min="60" max="480" step="20" value="240" (valueChange)="sliderAnimation($event)"></mat-slider>
       </div>
       <div class="col-3 pt-3">
         <span>
-          <strong>Incoming Tasks:</strong> {{numberOr(results.incomingTasks, "-")}} Tasks/s
+          <strong>Task Arrival:</strong> {{numberOr(results.incomingTasks, "-")}} Tasks/s
         </span>
       </div>
       <div class="col-3 pt-3">
