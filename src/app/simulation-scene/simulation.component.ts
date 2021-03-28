@@ -14,6 +14,11 @@ class Results {
   p999?: undefined | null | number;
 }
 
+enum Enqueue {
+  Random = '1',
+  RoundRobin = '2',
+}
+
 const percIndex = (len: number, magnitude: number): number => Math.round((len / magnitude) * (magnitude - 1));
 
 @Component({
@@ -38,18 +43,19 @@ export class SimulationComponent implements OnInit {
   private simulationStart = 0;
 
   public model = {
-    arrivalRateRandomGeneratorType: RandomGeneratorTypes.WeightList,
+    arrivalRateRandomGeneratorType: RandomGeneratorTypes.NormalDistribution,
     arrivalRateRandomMin: 100,
-    arrivalRateRandomMax: 2000,
+    arrivalRateRandomMax: 1150,
     taskSizeRandomGeneratorType: RandomGeneratorTypes.WeightList,
     taskSizeRandomMin: 200,
     taskSizeRandomMax: 2100,
-    arrivalWeightList: '[0.4, 750], [0.2, 1000], [0.3, 500], [0.1, 2000]',
+    arrivalWeightList: '[0.4, 100], [0.2, 1000], [0.3, 500], [0.1, 2000]',
     taskWeightList: '[0.4, 3000], [0.2, 5000], [0.3, 4000], [0.05, 10000], [0.05, 20000]',
     batchSize: '1',
     processorCount: 1,
     queueSize: 10,
     queueCount: 1,
+    enqueue: Enqueue.Random,
   };
   public results = new Results();
 
@@ -126,6 +132,7 @@ export class SimulationComponent implements OnInit {
       taskSizeRandGen,
       arrivalRateRandGen,
     );
+
     const stepP = this.simulationCanvas.nativeElement.width / this.model.processorCount;
     for (let i = 0; i < this.model.processorCount; ++i) {
       const proc = new Processor(
@@ -190,12 +197,15 @@ export class SimulationComponent implements OnInit {
   private async pushTasks(): Promise<void> {
     const [taskGenerator, taskGenCancel] = this.taskFactory.createGenerator();
     this.taskGenCancel = taskGenCancel;
+    const queueCount = this.model.queueCount;
+    const enqueue = this.model.enqueue;
     for await (const task of taskGenerator) {
-      const qIndex = this.overallTasks++ % this.taskQueues.length;
-      task.setXPos((this.simulationCanvas.nativeElement.width / this.model.queueCount) * qIndex);
+      const qIndex = (enqueue === Enqueue.Random)
+        ? Math.floor(Math.random() * this.taskQueues.length) : this.overallTasks % this.taskQueues.length;
+      task.setXPos((this.simulationCanvas.nativeElement.width / queueCount) * qIndex);
       task.setCompletionCallback(completedTask => this.updateResults(completedTask.getDelayTime()));
       this.taskQueues[qIndex].push(task);
-      this.results.incomingTasks = round(this.overallTasks / ((new Date().getTime() - this.simulationStart) / 1000), 3);
+      this.results.incomingTasks = round(++this.overallTasks / ((new Date().getTime() - this.simulationStart) / 1000), 3);
     }
   }
 

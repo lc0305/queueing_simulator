@@ -125,12 +125,23 @@
               id="processorCount" name="processorCount"></mat-slider>
           </div>
         </div>
+        <div class="row p-2 pt-1 pb-1">
+          <div class="col-6 float-left">
+            <label for="enqueue">Enqueue</label>
+          </div>
+          <div class="col-6 float-left">
+            <mat-select required [(ngModel)]="model.enqueue" id="enqueue" name="enqueue" class="text-center">
+              <mat-option value="1">Random</mat-option>
+              <mat-option value="2">Round-robin</mat-option>
+            </mat-select>
+          </div>
+        </div>
         <div class="row p-1">
           <div class="col-6 float-left pt-2">
             <label for="queueCount">Queue-Count</label>
           </div>
           <div class="col-6 float-left">
-            <mat-slider min="1" max="4" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueCount"
+            <mat-slider min="1" max="8" step="1" thumbLabel tickInterval="1" [(ngModel)]="model.queueCount"
               id="queueCount" name="queueCount"></mat-slider>
           </div>
         </div>
