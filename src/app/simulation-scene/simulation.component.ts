@@ -41,7 +41,7 @@ export class SimulationComponent implements OnInit {
   private overallDuration = 0;
   private overallTasks = 0;
   private simulationStart = 0;
-
+  public maxQueueSize = 24;
   public model = {
     arrivalRateRandomGeneratorType: RandomGeneratorTypes.NormalDistribution,
     arrivalRateRandomMin: 100,
@@ -56,7 +56,7 @@ export class SimulationComponent implements OnInit {
     queueSize: 10,
     queueCount: 1,
     maxQueueCount: 1,
-    maxQueueSize: 24,
+    maxQueueSize: this.maxQueueSize,
     enqueue: Enqueue.Random,
   };
   public results = new Results();
@@ -269,7 +269,7 @@ export class SimulationComponent implements OnInit {
 
   public sliderQueueCount(val: number | null): void {
     val = (val || 1);
-    this.model.maxQueueSize = Math.floor(24 / val);
+    this.model.maxQueueSize = Math.floor(this.maxQueueSize / val);
     if (this.model.maxQueueSize < this.model.queueSize) {
       this.model.queueSize = this.model.maxQueueSize;
     }
