@@ -21,7 +21,7 @@ export class Processor extends Rectangle {
   }
 
   public async work(taskQueue: TaskQueue): Promise<void> {
-    while (true) {
+    for (;;) {
       if (0 < this.batchSize) {
         let task: Task | null = null;
         let i = 0;
