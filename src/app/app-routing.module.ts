@@ -10,11 +10,6 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'simulation',
-        pathMatch: 'full',
-      },
-      {
-        path: 'simulation',
         component: SimulationComponent,
       },
     ],
