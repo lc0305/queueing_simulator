@@ -42,7 +42,7 @@ export class SimulationComponent implements OnInit {
   private overallDuration = 0;
   private overallTasks = 0;
   private simulationStart = 0;
-  public maxQueueSize = 24;
+  private maxQueueSize = 24;
   public model = {
     arrivalRateRandomGeneratorType: RandomGeneratorTypes.PoissonDistribution,
     arrivalRateRandomMin: 100,
@@ -65,6 +65,11 @@ export class SimulationComponent implements OnInit {
     enqueue: Enqueue.Random,
   };
   public results = new Results();
+  public utilization: Record<string, number>  = {
+    arrival: 0,
+    service: 0,
+    factor: 0,
+  };
 
   constructor(private readonly ngZone: NgZone) { }
 
@@ -146,6 +151,15 @@ export class SimulationComponent implements OnInit {
         arrivalRateRandGen = new WeightList(this.parseWeightList(this.model.arrivalWeightList));
         break;
     }
+    this.utilization.arrival = round(1000 / arrivalRateRandGen.getMean(), 3);
+    const service = round((1000 / taskSizeRandGen.getMean()) * this.model.processorCount, 3);
+    if (this.utilization.arrival <= service) {
+      this.utilization.service = this.utilization.arrival;
+      this.utilization.factor = 1;
+    } else {
+      this.utilization.service = service;
+      this.utilization.factor = round(this.utilization.arrival / service, 3);
+    }
 
     this.taskFactory = new TaskFactory(this.ctx, 20, this.simulationCanvas.nativeElement.height,
       taskSizeRandGen,
@@ -186,6 +200,9 @@ export class SimulationComponent implements OnInit {
     this.results = new Results();
     this.overallDuration = 0;
     this.overallTasks = 0;
+    for (const key of Object.keys(this.utilization)) {
+      this.utilization[key] = 0;
+    }
   }
 
   public saveCSV(): void {
@@ -194,6 +211,13 @@ export class SimulationComponent implements OnInit {
       [Object.values(this.results).map(value => numberOr(value, NaN))],
     );
     saveCSV('queueing_export_' + new Date().getTime().toString(), csvStr);
+  }
+
+  public utilizationFactor(lambda: number | null | undefined, mu: number | null | undefined): number | null {
+    if (typeof lambda === 'number' && typeof mu === 'number') {
+      return round(lambda / mu, 3);
+    }
+    return null;
   }
 
   public numberOr(value: any, or: string): number | string {

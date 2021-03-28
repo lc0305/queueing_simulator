@@ -253,15 +253,29 @@
         <label>Animation-Speed</label>
         <mat-slider min="60" max="480" step="20" value="240" (valueChange)="sliderAnimation($event)"></mat-slider>
       </div>
-      <div class="col-3 pt-3">
-        <span>
+      <div class="col-2 pt-3">
+        <div>
           <strong>Task Arrival:</strong> {{numberOr(results.incomingTasks, "-")}} Tasks/s
-        </span>
+        </div>
+        <div class="smaller-font">
+          Expected: {{utilization.arrival || "-"}} Tasks/s
+        </div>
       </div>
-      <div class="col-3 pt-3">
-        <span>
+      <div class="col-2 pt-3">
+        <div>
           <strong>Throughput:</strong> {{numberOr(results.throughput, "-")}} Tasks/s
-        </span>
+        </div>
+        <div class="smaller-font">
+          Expected: {{utilization.service || "-"}} Tasks/s
+        </div>
+      </div>
+      <div class="col-2 pt-3">
+        <div>
+          <strong>Utilization Factor:</strong> {{numberOr(utilizationFactor(results.incomingTasks, results.throughput), "-")}}
+        </div>
+        <div class="smaller-font">
+          Expected: {{utilization.factor || "-"}}
+        </div>
       </div>
       <div class="col-3 pt-2">
         <div class="form-group">

@@ -35,7 +35,7 @@ export const randomNormalMinMax = (min: number, max: number, skew = 1): number =
 
 export const stdevMinMax = (min: number, max: number, z = 3.6): number => ((max - min) / 2) / z;
 
-export const medianMinMax = (min: number, max: number): number => ((max - min) / 2) + min;
+export const medianMinMax = (min: number, max: number): number => (max + min) / 2;
 
 const logFactorialTable = [
   0.0,
