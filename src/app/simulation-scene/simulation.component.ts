@@ -318,6 +318,7 @@ export class SimulationComponent implements OnInit {
     this.model.maxQueueCount = val;
     if (val < this.model.queueCount) {
       this.model.queueCount = val;
+      this.sliderQueueCount(val);
     }
   }
 
