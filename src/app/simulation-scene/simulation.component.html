@@ -258,7 +258,7 @@
           <strong>Task Arrival:</strong> {{numberOr(results.incomingTasks, "-")}} Tasks/s
         </div>
         <div class="smaller-font">
-          Expected: {{utilization.arrival || "-"}} Tasks/s
+          E(X) = {{utilization.arrival || "-"}} Tasks/s
         </div>
       </div>
       <div class="col-2 pt-3">
@@ -266,15 +266,15 @@
           <strong>Throughput:</strong> {{numberOr(results.throughput, "-")}} Tasks/s
         </div>
         <div class="smaller-font">
-          Expected: {{utilization.service || "-"}} Tasks/s
+          E(X) = {{utilization.service || "-"}} Tasks/s
         </div>
       </div>
       <div class="col-2 pt-3">
         <div>
-          <strong>Utilization Factor:</strong> {{numberOr(utilizationFactor(results.incomingTasks, results.throughput), "-")}}
+          <strong>Utilization:</strong> {{numberOr(utilizationFactor(results.incomingTasks, results.throughput), "-")}}
         </div>
         <div class="smaller-font">
-          Expected: {{utilization.factor || "-"}}
+          E(X) = {{utilization.factor || "-"}}
         </div>
       </div>
       <div class="col-3 pt-2">
