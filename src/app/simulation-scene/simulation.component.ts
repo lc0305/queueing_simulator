@@ -1,6 +1,6 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { insertSorted, medianMinMax, numberOr, round, saveCSV, stdevMinMax, toCSV } from '../common';
-import { Shape } from '../geometry';
+import { Shape, smallestQueueIndex } from '../geometry';
 import { Processor, TaskFactory, TaskQueue, TaskGeneratorCancel, WeightListEntry, WeightList, RandomGeneratorTypes, UniformDistribution, NormalDistribution, RandomGenerator } from '../simulation';
 import { ExponentialDistribution, PoissonDistribution } from '../simulation/randomdistributions';
 
@@ -18,6 +18,7 @@ class Results {
 enum Enqueue {
   Random = '1',
   RoundRobin = '2',
+  LeastUtilized = '3',
 }
 
 const percIndex = (len: number, magnitude: number): number => Math.round((len / magnitude) * (magnitude - 1));
@@ -240,13 +241,23 @@ export class SimulationComponent implements OnInit {
   }
 
   private async pushTasks(): Promise<void> {
+    let getIndex: () => number;
+    switch (this.model.enqueue) {
+      case Enqueue.RoundRobin:
+        getIndex = () => this.overallTasks % this.taskQueues.length;
+        break;
+      case Enqueue.LeastUtilized:
+        getIndex = () => smallestQueueIndex(this.taskQueues);
+        break;
+      default:
+        getIndex = () => Math.floor(Math.random() * this.taskQueues.length);
+        break;
+    }
     const [taskGenerator, taskGenCancel] = this.taskFactory.createGenerator();
     this.taskGenCancel = taskGenCancel;
     const queueCount = this.model.queueCount;
-    const enqueue = this.model.enqueue;
     for await (const task of taskGenerator) {
-      const qIndex = (enqueue === Enqueue.Random)
-        ? Math.floor(Math.random() * this.taskQueues.length) : this.overallTasks % this.taskQueues.length;
+      const qIndex = getIndex();
       task.setXPos((this.simulationCanvas.nativeElement.width / queueCount) * qIndex);
       task.setCompletionCallback(completedTask => this.updateResults(completedTask.getDelayTime()));
       this.taskQueues[qIndex].push(task);

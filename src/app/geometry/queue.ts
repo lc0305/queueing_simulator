@@ -67,6 +67,10 @@ export class Queue<T extends Circle> implements Shape {
     }
   }
 
+  public length(): number {
+    return this.queue.length;
+  }
+
   public addAnimation(animationStep: AnimationStep): void {
     animationStep.setContext(this);
     this.animationSteps.push(animationStep);
@@ -211,3 +215,17 @@ export class Queue<T extends Circle> implements Shape {
   }
 
 }
+
+export const smallestQueueIndex = <T extends Circle>(queues: Array<Queue<T>>): number => {
+  let smallestLength = Number.MAX_SAFE_INTEGER;
+  let index = 0;
+
+  for (let i = 0; i < queues.length; ++i) {
+    const len = queues[i].length();
+    if (len < smallestLength) {
+      smallestLength = len;
+      index = i;
+    }
+  }
+  return index;
+};
