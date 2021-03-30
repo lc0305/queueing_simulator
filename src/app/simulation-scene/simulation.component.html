@@ -267,7 +267,7 @@
           <strong>Throughput:</strong> {{numberOr(results.throughput, "-")}} Tasks/s
         </div>
         <div class="smaller-font">
-          E(X) = {{utilization.service || "-"}} Tasks/s
+          E(X) &lt;= {{utilization.service || "-"}} Tasks/s
         </div>
       </div>
       <div class="col-2 pt-3">
@@ -275,7 +275,7 @@
           <strong>Utilization:</strong> {{numberOr(utilizationFactor(results.incomingTasks, results.throughput), "-")}}
         </div>
         <div class="smaller-font">
-          E(X) = {{utilization.factor || "-"}}
+          E(X) &lt;= {{utilization.factor || "-"}}
         </div>
       </div>
       <div class="col-3 pt-2">
